@@ -12,6 +12,8 @@ class TicTacToeViewController: UIViewController {
     var isFirstPLayersTurn = true
     var timer = Timer()
     var tempusFugit = 60
+    var minutes = 0
+    var secondes = 0
     var brain = Brain()
     
     @IBOutlet var buttons: [UIButton]!
@@ -89,6 +91,10 @@ class TicTacToeViewController: UIViewController {
         timer.invalidate()
         tempusFugit = 60
         setupView()
+    }
+    
+    func configurateClock() {
+        
     }
     
     
