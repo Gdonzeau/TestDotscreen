@@ -21,8 +21,7 @@ class Brain {
     var scorePlayerTwo = 0
     
     func pressButton(tag: Int, isFirstPlayerTurn: Bool) {
-        // Les tags ont été assignés à partir de 1 et non 0 pour une meilleur lecture "humaine" du tableau
-        // Normalement un bouton autre que .none est incatif, mais on sécurise
+        // Normalement un bouton autre que .none est inactif, mais on sécurise
         guard buttonsState[tag-1] == .none else {
             return
         }
@@ -46,21 +45,56 @@ class Brain {
     
     func checkForVictoryConditions() {
         // Il y a 8 possibilités de gagner
-        if buttonsState[1] == buttonsState[2], buttonsState[2] == buttonsState[3] { // La première ligne est remplie par le même joueur
+        
+        if buttonsState[0] == buttonsState[1] && buttonsState[1] == buttonsState[2] && buttonsState[0] != .none { // La première ligne est remplie par le même joueur
+            print("L1")
+                winnerIs(winner: buttonsState[0])
+        }
+        else if buttonsState[3] == buttonsState[4] && buttonsState[4] == buttonsState[5] && buttonsState[3] != .none{ // La deuxième ligne est remplie par le même joueur
+            print("L2")
+            winnerIs(winner: buttonsState[3])
+        }
+        else if buttonsState[6] == buttonsState[7] && buttonsState[7] == buttonsState[8] && buttonsState[6] != .none{ // La troisième ligne est remplie par le même joueur
+            print("L3")
+            winnerIs(winner: buttonsState[6])
+        }
+        else if buttonsState[0] == buttonsState[3] && buttonsState[3] == buttonsState[6] && buttonsState[0] != .none{ // La première colonne est remplie par le même joueur
+            print("C1")
+            winnerIs(winner: buttonsState[0])
+        }
+        else if buttonsState[1] == buttonsState[4] && buttonsState[4] == buttonsState[7] && buttonsState[1] != .none{ // La deuxième colonne est remplie par le même joueur
+            print("C2")
             winnerIs(winner: buttonsState[1])
         }
+        else if buttonsState[2] == buttonsState[5] && buttonsState[5] == buttonsState[8] && buttonsState[2] != .none{ // La troisième colonne est remplie par le même joueur
+            print("C3")
+            winnerIs(winner: buttonsState[2])
+        }
+        else if buttonsState[0] == buttonsState[4] && buttonsState[4] == buttonsState[8] && buttonsState[0] != .none{ // La première diagonale est remplie par le même joueur
+            print("D1")
+            winnerIs(winner: buttonsState[0])
+        }
+        else if buttonsState[2] == buttonsState[4] && buttonsState[4] == buttonsState[6] && buttonsState[2] != .none{ // La deuxième diagonale est remplie par le même joueur
+            print("D2")
+            winnerIs(winner: buttonsState[2])
+        }
+        
     }
     
     func winnerIs(winner: ButtonState) {
+        print("Check : \(ButtonState.self)")
         switch winner {
         case .player1:
+            print("player one wins")
             scorePlayerOne += 1
         case .player2:
+            print("player two wins")
             scorePlayerTwo += 1
         case .none:
             print("Error")
         }
         notifChangeButton()
+        newGame()
     }
     
     private func notifChangeButton() { // Each time a button is pressed, let's send a notification to refresh the states
