@@ -9,9 +9,19 @@ import UIKit
 
 class TicTacToeViewController: UIViewController {
     
-    var isFirstPLayersTurn = true
+    var isFirstPLayersTurn = true {
+        didSet {
+            if isFirstPLayersTurn {
+                playerOneLabel.textColor = .red
+                playerTwoLabel.textColor = .black
+            } else {
+                playerOneLabel.textColor = .black
+                playerTwoLabel.textColor = .red
+            }
+        }
+    }
     var timer = Timer()
-    var tempusFugit = 60
+    var tempusFugit = 180
     var minutes = 0
     var secondes = 0
     var brain = Brain()
@@ -27,15 +37,25 @@ class TicTacToeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
-        activateNotifications()
-        brain.newGame()
+        begin()
     }
     
     func setupView() {
-        timerLabel.text = "Temps restant : \(tempusFugit)"
+        timerLabel.text = "Temps restant : \(configurateClock())"
         playerOneLabel.text = "Joueur 1 : \(brain.scorePlayerOne)"
         playerTwoLabel.text = "Joueur 2 : \(brain.scorePlayerTwo)"
+    }
+    
+    func begin() {
+        timer = Timer.scheduledTimer(timeInterval: 1.00, target: self, selector: #selector(timerDown), userInfo: nil, repeats: true)
+        playerOneLabel.textColor = .red
+        playerTwoLabel.textColor = .black
+        brain.scorePlayerOne = 0
+        brain.scorePlayerTwo = 0
+        tempusFugit = 180
+        setupView()
+        activateNotifications()
+        brain.newGame()
     }
     
     func activateNotifications() {
@@ -44,7 +64,7 @@ class TicTacToeViewController: UIViewController {
     }
     
     @objc func refreshButtons() {
-        timer = Timer.scheduledTimer(timeInterval: 1.00, target: self, selector: #selector(timerDown), userInfo: nil, repeats: true)
+        //timer = Timer.scheduledTimer(timeInterval: 1.00, target: self, selector: #selector(timerDown), userInfo: nil, repeats: true)
         for index in 0 ..< brain.buttonsState.count {
             switch brain.buttonsState[index] {
             
@@ -58,7 +78,6 @@ class TicTacToeViewController: UIViewController {
                 buttons[index].setTitle("", for: .normal)
                 buttons[index].isEnabled = true
             }
-            
             setupView()
         }
     }
@@ -68,19 +87,30 @@ class TicTacToeViewController: UIViewController {
             tempusFugit -= 1
             setupView()
         } else {
+            // Pendant la programmation, j'avais gardé dans un coin de ma tête qu'il fallait faire un chrono. Il me semblait que c'était le temps pour chaque joueur pour jouer. Après relecture c'était la fin de la partie. Je corrige mais je laisse l'ancien code en commentaire.
+            /*
             if isFirstPLayersTurn {
                 brain.scorePlayerTwo += 1
             } else {
                 brain.scorePlayerOne += 1
             }
             newGame()
+ */
+            timer.invalidate()
+            if brain.scorePlayerOne < brain.scorePlayerTwo {
+                End(endMessage: "Joueur deux gagne")
+            } else if brain.scorePlayerOne > brain.scorePlayerTwo {
+                End(endMessage: "Joueur un gagne")
+            } else {
+                End(endMessage: "C'est une égalité")
+            }
         }
     }
     
     func newGame() {
         brain.newGame()
-        timer.invalidate()
-        tempusFugit = 60
+        //timer.invalidate()
+        //tempusFugit = 60
         setupView()
     }
     
@@ -88,15 +118,21 @@ class TicTacToeViewController: UIViewController {
         print(tag)
         brain.pressButton(tag: tag, isFirstPlayerTurn: isFirstPLayersTurn)
         isFirstPLayersTurn.toggle()
-        timer.invalidate()
-        tempusFugit = 60
+        //timer.invalidate()
+        //tempusFugit = 60
         setupView()
     }
     
-    func configurateClock() {
-        
+    func configurateClock() -> String {
+        minutes = tempusFugit/60
+        secondes = tempusFugit%60
+        return "\(minutes):\(secondes)"
     }
     
-    
+    private func End(endMessage: String) {
+            let alertVC = UIAlertController(title: "Fin de la partie", message: endMessage, preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            present(alertVC,animated: true,completion: nil)
+        }
    
 }

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 class Brain {
     
@@ -79,6 +78,14 @@ class Brain {
             winnerIs(winner: buttonsState[2])
         }
         
+        // Et une égalité : toutes les cases pleines et aucune victoire
+        for buttonState in buttonsState {
+            if buttonState == .none {
+                return
+            }
+        }
+        winnerIs(winner: .none)
+        
     }
     
     func winnerIs(winner: ButtonState) {
@@ -91,7 +98,7 @@ class Brain {
             print("player two wins")
             scorePlayerTwo += 1
         case .none:
-            print("Error")
+            print("Egalité")
         }
         notifChangeButton()
         newGame()
